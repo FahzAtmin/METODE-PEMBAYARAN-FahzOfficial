@@ -3,84 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fantasome | Form Pembayaran</title>
+  <title>Formulir Pembayaran</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in {
-      animation: fadeIn 0.8s ease-out;
-    }
-  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-gray-700 min-h-screen flex items-center justify-center px-4">
-  <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md fade-in">
-    <div class="text-center mb-4">
-      <img src="https://i.ibb.co/7NNMgKD/fantasome.png" alt="Fantasome" class="w-20 h-20 mx-auto rounded-full shadow-md" />
-      <h1 class="mt-2 text-xl font-bold text-gray-800">Fantasome Official</h1>
-      <p class="text-sm text-gray-500">Formulir Upload Bukti Pembayaran</p>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
+    <div class="text-center mb-6">
+      <img src="https://i.ibb.co/7NNMgKD/fantasome.png" alt="Fantasome" class="w-20 h-20 mx-auto rounded-full shadow" />
+      <h1 class="text-2xl font-bold text-gray-800 mt-4">Formulir Pembayaran</h1>
+      <p class="text-sm text-gray-500">Silakan isi dan upload bukti transfer</p>
     </div>
+
     <form id="paymentForm">
-      <input type="text" id="nama" placeholder="Nama Lengkap" class="mb-3 w-full border px-3 py-2 rounded-lg" required />
-      <input type="tel" id="nomor" placeholder="Nomor WhatsApp Aktif" class="mb-3 w-full border px-3 py-2 rounded-lg" required />
-      <label class="block font-semibold mb-1">Foto Bukti Transfer</label>
-      <input type="file" id="bukti" accept="image/*" class="mb-4 w-full" required />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg w-full">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nama</label>
+        <input type="text" id="nama" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
+        <input type="text" id="wa" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
+        <input type="file" id="bukti" accept="image/*" required class="mt-1 block w-full text-sm text-gray-600" />
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
         Kirim ke WhatsApp Admin
       </button>
     </form>
-    <div id="status" class="mt-4 text-sm text-center text-gray-600"></div>
   </div>
 
   <script>
-    const imgbbApiKey = "cef18c0096a9388f2a22eb1f603542c0"; // API key ImgBB kamu
-    const waTujuan = "628998967277"; // Nomor WA kamu
+    const form = document.getElementById("paymentForm");
 
-    document.getElementById("paymentForm").addEventListener("submit", async function (e) {
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
+
       const nama = document.getElementById("nama").value.trim();
-      const nomor = document.getElementById("nomor").value.trim();
-      const file = document.getElementById("bukti").files[0];
-      const status = document.getElementById("status");
+      const wa = document.getElementById("wa").value.trim();
+      const buktiFile = document.getElementById("bukti").files[0];
 
-      if (!file) {
-        alert("Harap upload bukti pembayaran.");
-        return;
+      if (!buktiFile) return alert("Upload bukti dulu!");
+
+      const formData = new FormData();
+      formData.append("image", buktiFile);
+      formData.append("key", "cef18c0096a9388f2a22eb1f603542c0");
+
+      try {
+        const res = await fetch("https://api.imgbb.com/1/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        const imageUrl = data.data.url;
+
+        const pesan = `*Formulir Pembayaran Baru*\n\n👤 Nama: ${nama}\n📱 Nomor WA: ${wa}\n🖼️ Bukti: ${imageUrl}`;
+
+        const waTujuan = "628998967277"; // Ganti dengan nomor admin kamu
+        const waURL = `https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`;
+
+        window.open(waURL, "_blank");
+      } catch (error) {
+        alert("Gagal upload gambar. Coba lagi.");
+        console.error(error);
       }
-
-      status.textContent = "📤 Mengupload gambar ke server...";
-
-      const reader = new FileReader();
-      reader.onloadend = async function () {
-        const base64 = reader.result.replace(/^data:image\\/\\w+;base64,/, "");
-        const formData = new FormData();
-        formData.append("image", base64);
-
-        try {
-          const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-            method: "POST",
-            body: formData,
-          });
-
-          const data = await res.json();
-          if (!data.success) throw new Error("Gagal upload gambar.");
-
-          const imageUrl = data.data.url;
-          const pesan = `*Formulir Pembayaran Baru*\n\n👤 Nama: ${nama}\n📱 Nomor WA: ${nomor}\n🧾 Bukti: ${imageUrl}`;
-          const waLink = `https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`;
-          
-          status.innerHTML = `✅ Gambar berhasil diupload! <a href="${imageUrl}" target="_blank" class="underline text-blue-600">Lihat Bukti</a>`;
-          window.open(waLink, "_blank");
-        } catch (err) {
-          console.error(err);
-          status.textContent = "❌ Gagal mengupload gambar. Coba ulangi.";
-        }
-      };
-
-      reader.readAsDataURL(file);
     });
   </script>
 </body>
-        </html>
+</html>
