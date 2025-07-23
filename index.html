@@ -5,84 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulir Pembayaran</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
+<body class="p-6 bg-gray-100 text-gray-800">
+
+  <div class="max-w-xl mx-auto bg-white rounded-lg shadow-lg p-6">
     <div class="text-center mb-6">
-      <img src="https://i.ibb.co/7NNMgKD/fantasome.png" alt="Fantasome" class="w-20 h-20 mx-auto rounded-full shadow" />
-      <h1 class="text-2xl font-bold text-gray-800 mt-4">Formulir Pembayaran</h1>
-      <p class="text-sm text-gray-500">Silakan isi dan upload bukti transfer</p>
+      <img src="https://i.ibb.co/fdwj7tGb/IMG-20250719-WA0011.jpg" alt="Fantasome" class="w-20 mx-auto mb-4 rounded-full logo" />
+      <h1 class="text-2xl font-bold">Formulir Pembayaran</h1>
     </div>
 
-    <form id="paymentForm">
+    <form id="formPembayaran">
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Nama</label>
-        <input type="text" id="nama" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label for="nama" class="block font-medium">Nama</label>
+        <input type="text" id="nama" class="w-full mt-1 p-2 border rounded" required />
       </div>
 
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
-        <input type="text" id="wa" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label for="bukti" class="block font-medium">Upload Bukti Pembayaran</label>
+        <input type="file" id="bukti" accept="image/*" class="w-full mt-1 p-2 border rounded" required />
       </div>
 
-      <!-- Metode Pembayaran -->
-      <div class="mb-6 bg-gray-50 p-4 rounded-md shadow-inner">
-        <h2 class="text-sm font-semibold text-gray-700 mb-2">Metode Pembayaran</h2>
-        <p class="text-sm text-gray-600 mb-2">🟢 <strong>Dana:</strong> 089610921722</p>
-        <div class="mb-2">
-          <p class="text-sm text-gray-600 mb-1">📷 <strong>QRIS:</strong></p>
-          <img src="https://i.ibb.co/fdwj7tGb/IMG-20250719-WA0011.jpg" alt="QRIS Kamu" class="w-48 mx-auto border rounded-md" />
+      <!-- Tombol Metode Pembayaran -->
+      <div class="mt-6 space-y-4">
+        <h2 class="text-lg font-semibold">Pilih Metode Pembayaran:</h2>
+        <div class="flex space-x-4">
+          <button type="button" onclick="showMetode('dana')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Bayar via Dana</button>
+          <button type="button" onclick="showMetode('qris')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Bayar via QRIS</button>
         </div>
-        <p class="text-xs text-gray-400 text-center">*Upload bukti setelah pembayaran</p>
+
+        <!-- Dana -->
+        <div id="dana" class="hidden qris-box">
+          <p class="font-medium">No Dana: <span id="danaNo">089610921722</span></p>
+          <button type="button" onclick="copyText('danaNo')" class="mt-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Salin Nomor Dana</button>
+        </div>
+
+        <!-- QRIS -->
+        <div id="qris" class="hidden qris-box">
+          <p class="font-medium mb-2">Scan QRIS berikut:</p>
+          <img src="https://i.ibb.co/fdwj7tGb/IMG-20250719-WA0011.jpg" alt="QRIS" />
+        </div>
       </div>
 
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
-        <input type="file" id="bukti" accept="image/*" required class="mt-1 block w-full text-sm text-gray-600" />
-      </div>
-
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-        Kirim ke WhatsApp Admin
-      </button>
+      <button type="submit" class="mt-6 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Kirim ke WhatsApp Admin</button>
     </form>
   </div>
 
   <script>
-    const form = document.getElementById("paymentForm");
+    function showMetode(metode) {
+      document.getElementById("dana").style.display = "none";
+      document.getElementById("qris").style.display = "none";
+      document.getElementById(metode).style.display = "block";
+    }
 
-    form.addEventListener("submit", async function (e) {
+    function copyText(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text);
+      alert("Nomor Dana berhasil disalin!");
+    }
+
+    document.getElementById("formPembayaran").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const nama = document.getElementById("nama").value.trim();
-      const wa = document.getElementById("wa").value.trim();
-      const buktiFile = document.getElementById("bukti").files[0];
+      const nama = document.getElementById("nama").value;
+      const file = document.getElementById("bukti").files[0];
 
-      if (!buktiFile) return alert("Upload bukti dulu!");
+      if (!file) return alert("Mohon upload bukti pembayaran.");
 
       const formData = new FormData();
-      formData.append("image", buktiFile);
+      formData.append("image", file);
       formData.append("key", "cef18c0096a9388f2a22eb1f603542c0");
 
       try {
         const res = await fetch("https://api.imgbb.com/1/upload", {
           method: "POST",
-          body: formData,
+          body: formData
         });
-
         const data = await res.json();
-        const imageUrl = data.data.url;
+        const linkGambar = data.data.url;
 
-        const pesan = `*Hallo Ini Formulir Pembayaran FahzOfficial Mohon Segera Konfirmasi Terimakasih🙏*\n\n👤 Nama: ${nama}\n📱 Nomor WA: ${wa}\n💰 Metode: Dana / QRIS\n🖼️ Bukti: ${imageUrl}`;
+        const pesan = `Halo Admin, saya ${nama} telah melakukan pembayaran.\n\nBukti pembayaran:\n${linkGambar}`;
+        const waTujuan = "628998967277";
+        const waLink = `https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`;
 
-        const waTujuan = "628998967277"; // Nomor admin kamu
-        const waURL = `https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`;
-
-        window.open(waURL, "_blank");
-      } catch (error) {
-        alert("Gagal upload gambar. Coba lagi.");
-        console.error(error);
+        window.open(waLink, "_blank");
+      } catch (err) {
+        alert("Gagal upload gambar!");
       }
     });
   </script>
+
 </body>
 </html>
