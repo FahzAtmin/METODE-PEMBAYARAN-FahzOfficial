@@ -2,105 +2,86 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Form Pembayaran | FahzOfficial</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-      animation: fade-in 0.5s ease-in-out;
-    }
-    .qris-box {
-      background: #f9f9ff;
-      border: 2px dashed #c3c6f1;
-      border-radius: 0.75rem;
-      padding: 1rem;
-      margin-top: 1rem;
-      text-align: center;
-    }
-    .btn-primary {
-      @apply px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition;
-    }
-    .btn-copy {
-      @apply mt-2 px-4 py-1 bg-gray-200 hover:bg-gray-300 rounded;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulir Pembayaran | FahzOfficial</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen flex items-center justify-center">
+<body>
+  <div class="container">
+    <img src="https://i.ibb.co/yYSJLCR/fantasome-icon.jpg" alt="Fantasome Icon" class="icon-fantasome" />
 
-  <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-lg animate-fade-in">
-    <h1 class="text-2xl font-bold text-center mb-6">Form Pembayaran</h1>
+    <h1>Pembayaran Otomatis</h1>
+    <p class="subtitle">Silakan isi formulir lalu unggah bukti pembayaran.</p>
 
-    <form id="payForm" class="space-y-4">
-      <input type="text" id="nama" placeholder="Nama lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-      
-      <input type="text" id="produk" placeholder="Nama produk" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    <input type="text" id="nama" placeholder="Nama Pengirim" required />
+    <input type="text" id="nominal" placeholder="Nominal Pembayaran (Contoh: 25.000)" required />
+    <input type="file" id="bukti" accept="image/*" required />
 
-      <input type="file" id="bukti" accept="image/*" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    <div class="payment-methods">
+      <button type="button" id="btnDana" class="active">Dana</button>
+      <button type="button" id="btnQris">QRIS</button>
+    </div>
 
-      <div class="mt-4 space-y-2">
-        <h2 class="text-lg font-semibold text-gray-700">Metode Pembayaran:</h2>
-        <div class="flex space-x-2">
-          <button type="button" onclick="showMetode('dana')" class="btn-primary">Dana</button>
-          <button type="button" onclick="showMetode('qris')" class="btn-primary">QRIS</button>
-        </div>
+    <div id="danaBox" class="dana-box">
+      <p>No Dana: <strong>089610921722</strong></p>
+    </div>
 
-        <div id="dana" class="hidden qris-box">
-          <p class="font-medium">Nomor Dana: <span id="danaNo">089610921722</span></p>
-          <button type="button" onclick="copyText('danaNo')" class="btn-copy">Salin Nomor</button>
-        </div>
+    <div id="qrisBox" class="qris-box" style="display: none;">
+      <img src="qris.jpg" alt="QRIS Code">
+      <p>Scan untuk bayar via QRIS</p>
+    </div>
 
-        <div id="qris" class="hidden qris-box">
-          <p class="font-medium mb-2">Scan QRIS di bawah ini:</p>
-          <img src="qris.jpg" alt="QRIS" class="mx-auto rounded-lg border shadow-lg w-64" />
-        </div>
-      </div>
-
-      <button type="submit" class="w-full btn-primary mt-4">Kirim ke WhatsApp Admin</button>
-    </form>
+    <button onclick="kirim()">Kirim ke WhatsApp Admin</button>
   </div>
 
   <script>
-    function showMetode(id) {
-      document.getElementById("dana").style.display = "none";
-      document.getElementById("qris").style.display = "none";
-      document.getElementById(id).style.display = "block";
-    }
+    const btnDana = document.getElementById('btnDana');
+    const btnQris = document.getElementById('btnQris');
+    const danaBox = document.getElementById('danaBox');
+    const qrisBox = document.getElementById('qrisBox');
 
-    function copyText(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text);
-      alert("Nomor berhasil disalin!");
-    }
-
-    document.getElementById("payForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const nama = document.getElementById("nama").value;
-      const produk = document.getElementById("produk").value;
-      const file = document.getElementById("bukti").files[0];
-      const waTujuan = "628998967277"; // Nomor WA Admin
-
-      if (!file) return alert("Upload bukti pembayaran dulu.");
-
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("key", "cef18c0096a9388f2a22eb1f603542c0");
-
-      const res = await fetch("https://api.imgbb.com/1/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      const imageUrl = data.data.url;
-
-      const pesan = `Halo Admin, saya sudah melakukan pembayaran.\n\nNama: ${nama}\nProduk: ${produk}\nBukti: ${imageUrl}`;
-      window.open(`https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`, "_blank");
+    btnDana.addEventListener('click', () => {
+      danaBox.style.display = 'block';
+      qrisBox.style.display = 'none';
+      btnDana.classList.add('active');
+      btnQris.classList.remove('active');
     });
-  </script>
 
+    btnQris.addEventListener('click', () => {
+      danaBox.style.display = 'none';
+      qrisBox.style.display = 'block';
+      btnQris.classList.add('active');
+      btnDana.classList.remove('active');
+    });
+
+    async function kirim() {
+      const nama = document.getElementById("nama").value;
+      const nominal = document.getElementById("nominal").value;
+      const bukti = document.getElementById("bukti").files[0];
+      if (!nama || !nominal || !bukti) return alert("Lengkapi semua data!");
+
+      // Upload ke imgbb
+      const formData = new FormData();
+      formData.append("image", bukti);
+      const imgbbKey = "cef18c0096a9388f2a22eb1f603542c0";
+      const upload = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+        method: "POST",
+        body: formData
+      });
+      const result = await upload.json();
+      const imageUrl = result.data.url;
+
+      const pesan = `🧾 *HALLO ADMIN INI BUKTI PEMBAYARAN SAYA MOHON SEGERA KONFIRMASI*
+      
+👤 Nama: ${nama}
+💰 Nominal: ${nominal}
+📸 Bukti: ${imageUrl}`;
+      [ *`TERIMA KASIH SUDAH ORDER DI FahzOfficial LANGGANAN TERUS YA JANGAN LUPA PROMOSII`*
+🌟 SALURAN ADMIN : 'https://whatsapp.com/channel/0029VbAecsYCnA7rMUiBMe3X'
+      const waTujuan = "628998967277"; // Ganti dengan nomor admin
+      const linkWA = `https://wa.me/${waTujuan}?text=${encodeURIComponent(pesan)}`;
+      window.open(linkWA, "_blank");
+    }
+  </script>
 </body>
 </html>
