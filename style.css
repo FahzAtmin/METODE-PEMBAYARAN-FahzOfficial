@@ -1,82 +1,90 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #f2f2f2;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
   margin: 0;
-  padding: 0;
 }
 
 .container {
-  max-width: 420px;
-  margin: 40px auto;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  background: #1e293b;
   padding: 30px;
+  border-radius: 15px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
   text-align: center;
 }
 
 .icon-fantasome {
   width: 80px;
   border-radius: 50%;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 h1 {
-  font-size: 24px;
-  margin: 10px 0;
+  font-size: 1.6rem;
+  margin-bottom: 5px;
 }
 
 .subtitle {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.9rem;
   margin-bottom: 20px;
+  color: #ccc;
 }
 
-input[type="text"], input[type="file"] {
+input, button {
   width: 100%;
   padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  margin: 7px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+input {
+  background: #334155;
+  color: white;
 }
 
 button {
-  background: #4CAF50;
+  background: #3b82f6;
   color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
   cursor: pointer;
-  margin-top: 10px;
-  font-size: 16px;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: #45a049;
+  background: #2563eb;
 }
 
 .payment-methods {
   display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
+  justify-content: space-around;
+  margin: 15px 0;
 }
 
 .payment-methods button {
-  flex: 1;
-  margin: 0 5px;
-  background: #ddd;
-  color: black;
+  width: 48%;
+  padding: 8px;
 }
 
 .payment-methods button.active {
-  background: #4CAF50;
-  color: white;
+  background: #10b981;
 }
 
 .qris-box img {
-  width: 100%;
-  max-width: 200px;
+  margin-top: 10px;
   border-radius: 10px;
-  margin: 10px 0;
-  cursor: pointer;
+  max-width: 100%;
+}
+
+.dana-box, .qris-box {
+  background: #334155;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
