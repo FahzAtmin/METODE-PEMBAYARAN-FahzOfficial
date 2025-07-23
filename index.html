@@ -3,20 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Formulir Pembayaran | FahzOfficial</title>
+  <title>Pembayaran | FahzOfficial</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="https://i.ibb.co/yYSJLCR/fantasome-icon.jpg">
 </head>
 <body>
   <div class="container">
     <img src="https://i.ibb.co/yYSJLCR/fantasome-icon.jpg" alt="Fantasome Icon" class="icon-fantasome" />
-
     <h1>Pembayaran Otomatis</h1>
-    <p class="subtitle">Isi formulir dan unggah bukti pembayaran</p>
+    <p class="subtitle">Silakan isi formulir lalu unggah bukti pembayaran.</p>
 
     <input type="text" id="nama" placeholder="Nama Pengirim" required />
     <input type="text" id="barang" placeholder="Nama Barang (Contoh: Web 25)" required />
-    <input type="text" id="nominal" placeholder="Nominal Pembayaran (Contoh: 25000)" required />
+    <input type="text" id="nominal" placeholder="Nominal Pembayaran (Contoh: 25.000)" required />
     <input type="file" id="bukti" accept="image/*" required />
 
     <div class="payment-methods">
@@ -29,11 +27,11 @@
     </div>
 
     <div id="qrisBox" class="qris-box" style="display: none;">
-      <img src="qris.jpg" alt="QRIS Code" style="max-width: 200px;">
-      <p>Scan QRIS untuk bayar</p>
+      <img src="qris.jpg" alt="QRIS Code" class="qris-img">
+      <p>Scan untuk bayar via QRIS</p>
     </div>
 
-    <button onclick="kirim()">Kirim ke WhatsApp Admin</button>
+    <button class="submit-btn" onclick="kirim()">Kirim ke WhatsApp Admin</button>
   </div>
 
   <script>
@@ -63,6 +61,8 @@
       const bukti = document.getElementById("bukti").files[0];
       if (!nama || !barang || !nominal || !bukti) return alert("Lengkapi semua data!");
 
+      const metode = document.querySelector('.payment-methods button.active').innerText;
+
       const formData = new FormData();
       formData.append("image", bukti);
 
@@ -81,9 +81,10 @@
 👤 Nama Pengirim: ${nama}
 📦 Barang: ${barang}
 💰 Nominal: ${nominal}
+💳 Metode Pembayaran: ${metode}
 📸 Bukti: ${imageUrl}
 
-🌟 Terima kasih telah order di *FahzOfficial* 🙏
+Terima kasih telah order di *FahzOfficial* 🙌
 📣 Channel Admin: https://whatsapp.com/channel/0029VbAecsYCnA7rMUiBMe3X`;
 
       const waTujuan = "628998967277";
